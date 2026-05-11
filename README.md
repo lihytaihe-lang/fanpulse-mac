@@ -6,7 +6,7 @@ fanpulse-mac is a small macOS command-line tool that can temporarily push the fa
 supported M-series Macs to the maximum RPM reported by AppleSMC, then automatically hand
 fan control back to macOS.
 
-中文说明：fanpulse-mac 是一个 macOS 小工具，可以让支持的 M 系列 Mac 风扇短时间拉到机器报告的最高转速，然后自动把风扇控制交还给系统。
+中文说明：fanpulse-mac 是一个 macOS 小工具，可以让支持的 M 系列 Mac 风扇短时间拉到机器最高转速进行散热，是比较激进的风扇策略，时间结束后自动把风扇控制交还给系统。
 
 It is intentionally not a full fan-control app. The current release is a CLI plus simple
 double-click launchers. A GUI may come later, but the first public version stays small and
@@ -29,6 +29,7 @@ easy to audit.
 - 把风扇目标转速设置为机器报告的最高 RPM。
 - 等待指定秒数。
 - 自动恢复，让 macOS 重新接管风扇控制。
+- M芯片开始，已经不支持设置风扇转速，它只有三档，最低、最高和系统控制。
 
 ## Safety note
 
