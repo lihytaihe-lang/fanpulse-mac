@@ -1,0 +1,14 @@
+.DS_Store
+/.build
+/.fanpulse-state.json
+/dist
+/docs
+/fanpulse-portable
+/fanpulse-portable.zip
+/Packages
+xcuserdata/
+DerivedData/
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
+.claude/
