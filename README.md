@@ -2,11 +2,11 @@
 
 Short max-speed fan boosts for supported Apple Silicon Macs.
 
-fanpulse-mac is a small macOS command-line tool that can temporarily push the fans on
-supported M-series Macs to the maximum RPM reported by AppleSMC, then automatically hand
-fan control back to macOS.
+fanpulse-mac is a small macOS command-line tool that temporarily asks supported M-series
+Macs to enter the maximum fan/cooling state reported through AppleSMC, then automatically
+hands fan control back to macOS.
 
-中文说明：fanpulse-mac 是一个 macOS 小工具，可以让支持的 M 系列 Mac 风扇短时间拉到机器最高转速进行散热，是比较激进的风扇策略，时间结束后自动把风扇控制交还给系统。
+中文说明：fanpulse-mac 是一个 macOS 小工具，可以让支持的 M 系列 Mac 短时间进入机器报告的最高风扇/散热状态。这是比较激进的临时散热策略，时间结束后会自动把风扇控制交还给系统。
 
 It is intentionally not a full fan-control app. The current release is a CLI plus simple
 double-click launchers. A GUI may come later, but the first public version stays small and
@@ -29,7 +29,35 @@ easy to audit.
 - 把风扇目标转速设置为机器报告的最高 RPM。
 - 等待指定秒数。
 - 自动恢复，让 macOS 重新接管风扇控制。
-- M芯片开始，已经不支持设置风扇转速，它只有三档，最低、最高和系统控制。
+
+## Apple Silicon fan behavior notes
+
+Part of the reason this project is open source is to share the hardware behavior we found
+while validating AppleSMC fan keys on real Apple Silicon Macs.
+
+On the tested M-series Macs, fan control does not behave like a smooth, arbitrary RPM
+slider. The practical states exposed through the keys we tested are closer to:
+
+- System-managed control, where macOS owns fan decisions.
+- A forced/manual high-cooling state, where fanpulse asks each fan to target the
+  machine-reported maximum RPM.
+- Minimum/idle values reported by SMC, which are useful for status/probing but are not
+  treated as a custom fan curve.
+
+Because of that, fanpulse deliberately offers short max-speed pulses and explicit restore.
+It does not try to provide persistent RPM tuning, fan curves, or background thermal policy.
+
+中文记录：
+
+这个项目开源的一部分意义，是把我们在真实 Apple Silicon 机器上验证 AppleSMC 风扇 key 时摸到的行为分享清楚。
+
+在已测试的 M 系列 Mac 上，风扇控制并不像很多旧工具那样是一个可以任意指定 RPM 的连续滑杆。我们观察到实际可用的状态更接近：
+
+- 系统自动控制，由 macOS 接管风扇决策。
+- 手动/强制高散热，让风扇目标指向机器报告的最高 RPM。
+- SMC 报告的最低/空闲值，可以用于 `status` 和 `probe` 观察，但 fanpulse 不把它当作自定义风扇曲线来使用。
+
+所以 fanpulse 只做短时间最高转速脉冲和明确恢复；它不做长期常驻的转速曲线、后台热管理，也不假装能精细调 RPM。
 
 ## Safety note
 
@@ -45,8 +73,13 @@ On a new Mac, test with 1 second first.
 
 Verified on:
 
-- Apple M4 Pro MacBook Pro
-- Apple Silicon Mac mini with active cooling
+- 16-inch MacBook Pro with M4 Pro
+- Mac mini with M4 Pro
+
+中文已验证机型：
+
+- 16 英寸 MacBook Pro（M4 Pro）
+- Mac mini（M4 Pro）
 
 Expected target:
 
