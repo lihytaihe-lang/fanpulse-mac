@@ -14,7 +14,7 @@ on:
 jobs:
   build-portable:
     name: Build fanpulse portable zip
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout
