@@ -3,6 +3,7 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -26,3 +27,13 @@ jobs:
           zsh -n restore-fans.sh
           zsh -n restore-fans.command
           zsh -n scripts/package-portable.sh
+
+      - name: Build portable package
+        run: zsh ./scripts/package-portable.sh
+
+      - name: Upload portable zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: fanpulse-portable
+          path: dist/fanpulse-portable.zip
+          if-no-files-found: error
