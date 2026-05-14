@@ -2,15 +2,45 @@
 
 Short max-speed fan boosts for supported Apple Silicon Macs.
 
-fanpulse-mac is a small macOS command-line tool that temporarily asks supported M-series
-Macs to enter the maximum fan/cooling state reported through AppleSMC, then automatically
-hands fan control back to macOS.
+fanpulse-mac is a small, auditable macOS command-line tool for Apple Silicon Macs with
+fans. It temporarily asks supported M-series Macs to enter the maximum fan/cooling state
+reported through AppleSMC, then automatically hands fan control back to macOS.
 
-中文说明：fanpulse-mac 是一个 macOS 小工具，可以让支持的 M 系列 Mac 短时间进入机器报告的最高风扇/散热状态。这是比较激进的临时散热策略，时间结束后会自动把风扇控制交还给系统。
+中文说明：fanpulse-mac 是一个面向带风扇 Apple Silicon Mac 的小型、可审计 macOS 工具。它可以让支持的 M 系列 Mac 短时间进入机器报告的最高风扇/散热状态，然后自动把风扇控制交还给系统。
 
-It is intentionally not a full fan-control app. The current release is a CLI plus simple
-double-click launchers. A GUI may come later, but the first public version stays small and
-easy to audit.
+## Project positioning
+
+fanpulse is not trying to become a full fan-control app. Its focused value is:
+
+> Short manual cooling pulses for heavy workloads, with explicit automatic restore.
+
+It is useful when you occasionally want the machine to cool more aggressively before or
+during a heavy workload, but you do not want a permanent fan curve, a background daemon,
+or a large GUI utility.
+
+中文定位：
+
+> fanpulse 不是完整风扇控制 App，而是一个“短时间强制散热脉冲 + 自动恢复系统控制权”的小工具。
+
+它适合偶尔在高负载前后主动拉高散热，但不想长期常驻、不想配置复杂风扇曲线的用户。
+
+## Good use cases
+
+- Local LLM inference or model testing on actively cooled Apple Silicon Macs.
+- Long builds, indexing, video exports, compression, or other bursty heavy workloads.
+- Hot rooms or summer desktop usage where you want a short pre-cooling / cooling burst.
+- Developers and power users who prefer a small open-source CLI over a background app.
+- Hardware behavior exploration with `status` and `probe`.
+
+## Non-goals
+
+fanpulse deliberately does not provide:
+
+- Persistent custom fan curves.
+- Long-running background thermal policy.
+- A menu-bar monitor.
+- Arbitrary RPM tuning promises across all M-series machines.
+- Support guarantees for fanless MacBook Air models.
 
 ## What it does
 
@@ -29,6 +59,25 @@ easy to audit.
 - 把风扇目标转速设置为机器报告的最高 RPM。
 - 等待指定秒数。
 - 自动恢复，让 macOS 重新接管风扇控制。
+
+## Why not a full fan-control app?
+
+Existing macOS fan utilities are better choices if you want a full GUI, continuous
+monitoring, persistent presets, custom fan curves, or long-running thermal rules.
+
+fanpulse is intentionally smaller:
+
+- CLI first.
+- No background daemon.
+- No permanent fan curve.
+- Short max-speed pulse only.
+- Automatic restore after the requested duration.
+- Open-source and easy to audit.
+
+This makes the tool easier to reason about and reduces the risk of accidentally leaving a
+custom fan policy running forever.
+
+中文说明：如果你需要完整 GUI、长期监控、风扇曲线、菜单栏常驻和复杂规则，成熟风扇工具更适合。fanpulse 的目标更小：只做短时间最高散热脉冲，并自动恢复。
 
 ## Apple Silicon fan behavior notes
 
@@ -73,13 +122,10 @@ On a new Mac, test with 1 second first.
 
 Verified on:
 
-- 16-inch MacBook Pro with M4 Pro
-- Mac mini with M4 Pro
-
-中文已验证机型：
-
-- 16 英寸 MacBook Pro（M4 Pro）
-- Mac mini（M4 Pro）
+| Model | Chip | Fan count | Status | Boost | Restore | Notes |
+| --- | --- | ---: | --- | --- | --- | --- |
+| 16-inch MacBook Pro | M4 Pro | 2 | Verified | Verified | Verified | Primary test machine |
+| Mac mini | M4 Pro | 1 | Verified | Verified | Verified | Primary desktop test machine |
 
 Expected target:
 
@@ -88,6 +134,16 @@ Expected target:
 
 Fanless MacBook Air models are not expected to do anything useful because they do not have
 fans to control.
+
+If you test another model, please open an issue with the model, chip, macOS version, and
+whether `status`, `boost 1`, and `restore` worked.
+
+中文已验证机型：
+
+- 16 英寸 MacBook Pro（M4 Pro）
+- Mac mini（M4 Pro）
+
+欢迎其他机型用户提交 issue，补充机型、芯片、macOS 版本，以及 `status`、`boost 1`、`restore` 是否正常。
 
 ## Build
 
@@ -187,6 +243,18 @@ dist/fanpulse-portable.zip
 
 Upload that zip to GitHub Releases instead of committing built binaries into the source
 repository.
+
+## Release and promotion checklist
+
+Before broader promotion, see [`docs/RELEASE_AND_PROMOTION.md`](docs/RELEASE_AND_PROMOTION.md).
+
+The short version:
+
+- Create a `v0.1.0` GitHub Release.
+- Upload `fanpulse-portable.zip` as a release asset.
+- Add a terminal screenshot or short GIF.
+- Ask testers to report compatibility results for more Apple Silicon models.
+- Promote it as a short cooling-pulse utility, not as a general fan-control replacement.
 
 ## Development
 
