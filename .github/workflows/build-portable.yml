@@ -1,0 +1,37 @@
+name: Build portable package
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'Package.swift'
+      - 'Sources/**'
+      - 'Tests/**'
+      - 'scripts/package-portable.sh'
+      - '.github/workflows/build-portable.yml'
+
+jobs:
+  build-portable:
+    name: Build fanpulse portable zip
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Run tests
+        run: swift test
+
+      - name: Build portable package
+        run: zsh ./scripts/package-portable.sh
+
+      - name: Upload portable zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: fanpulse-portable
+          path: dist/fanpulse-portable.zip
+          if-no-files-found: error
